@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大冒险联机版</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body { 
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; 
+            text-align: center; background: #1a1a2e; color: white; 
+            margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center;
+        }
+        .container { max-width: 400px; width: 100%; margin-top: 50px; }
+        h1 { font-size: 2rem; margin-bottom: 10px; }
+        .admin-link { color: #6366f1; text-decoration: none; font-size: 0.9rem; opacity: 0.7; }
+        .admin-link:hover { opacity: 1; text-decoration: underline; }
+        
+        #card-display { 
+            background: linear-gradient(145deg, #ffffff, #e6e6e6); 
+            color: #333; min-height: 200px; margin: 30px 0; 
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 20px; font-size: 1.4rem; font-weight: bold;
+            padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            line-height: 1.5;
+        }
+
+        button { 
+            background: #f43f5e; color: white; border: none; 
+            padding: 16px 40px; font-size: 1.25rem; font-weight: 600;
+            border-radius: 50px; cursor: pointer; transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
+        }
+        button:active { transform: scale(0.95); background: #e11d48; }
+        
+        .footer-info { margin-top: 20px; color: #475569; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🃏 大冒险联机</h1>
+        <a href="/admin" class="admin-link">⚙️ 管理卡库</a>
+        
+        <div id="card-display">准备好了吗？</div>
+        
+        <button onclick="draw()">我要抽牌！</button>
+        
+        <div class="footer-info">所有在线玩家将同步看到结果</div>
+    </div>
+
+    <script>
+        const socket = io();
+        const display = document.getElementById('card-display');
+
+        // 监听服务器广播的新卡片
+        socket.on('newCard', (text) => {
+            // 简单的切换动画效果
+            display.style.opacity = 0;
+            setTimeout(() => {
+                display.innerText = text;
+                display.style.opacity = 1;
+            }, 100);
+        });
+
+        function draw() {
+            socket.emit('draw');
+        }
+    </script>
+</body>
+</html>
